@@ -21,26 +21,30 @@ class MyHomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Fluck Norris Joke Teller'),
-      ),
-      body: ListView(children: const <Widget>[
-        JokeFlavorCard('Animals', 'b'),
-        JokeFlavorCard('Career', 'b'),
-        JokeFlavorCard('Celebrity', 'b'),
-        JokeFlavorCard('Dev', 'b'),
-        JokeFlavorCard('Explicit', 'b'),
-        JokeFlavorCard('Fashion', 'b'),
-        JokeFlavorCard('Food', 'b'),
-        JokeFlavorCard('History', 'b'),
-        JokeFlavorCard('Money', 'b'),
-        JokeFlavorCard('Movie', 'b'),
-        JokeFlavorCard('Music', 'b'),
-        JokeFlavorCard('Political', 'b'),
-        JokeFlavorCard('Religion', 'b'),
-        JokeFlavorCard('Science', 'b'),
-        JokeFlavorCard('Sport', 'b'),
-        JokeFlavorCard('Travel', 'b'),
-      ]),
+          leading: Container(margin: EdgeInsets.all(5),
+            child: CircleAvatar(
+            backgroundImage: AssetImage('assets/chuck.jpg'),
+          ),),
+          title: Text('Fluck Norris Joke Teller'),
+    ),
+    body: ListView(children: const <Widget>[
+    JokeFlavorCard('Animals', 'animals.webp'),
+    JokeFlavorCard('Career', 'career.png'),
+    JokeFlavorCard('Celebrity', 'celebrity.jpg'),
+    JokeFlavorCard('Dev', 'dev.jpg'),
+    JokeFlavorCard('Explicit', 'explicit.jpg'),
+    JokeFlavorCard('Fashion', 'fashion.jpg'),
+    JokeFlavorCard('Food', 'food.jpg'),
+    JokeFlavorCard('History', 'history.jpg'),
+    JokeFlavorCard('Money', 'money.jpg'),
+    JokeFlavorCard('Movie', 'movie.jpg'),
+    JokeFlavorCard('Music', 'music.png'),
+    JokeFlavorCard('Political', 'political.jpg'),
+    JokeFlavorCard('Religion', 'religion.png'),
+    JokeFlavorCard('Science', 'science.jpg'),
+    JokeFlavorCard('Sport', 'sport.jpg'),
+    JokeFlavorCard('Travel', 'travel.jpg'),
+    ]),
     );
   }
 }

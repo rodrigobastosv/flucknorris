@@ -16,11 +16,11 @@ class JokeFlavorCard extends StatelessWidget {
             print('teste');
           },
       leading: CircleAvatar(
-        backgroundImage: AssetImage('assets/animals.webp'),
+        backgroundImage: AssetImage('assets/$_imagePath'),
       ),
       title: Text(_flavor),
       subtitle: Text(_flavor),
-      trailing: Icon(Icons.more_vert),
+      trailing: Icon(Icons.play_arrow),
     ));
   }
 }
