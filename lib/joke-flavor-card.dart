@@ -1,25 +1,26 @@
+import 'package:flucknorris/joke.dart';
 import 'package:flutter/material.dart';
 
 class JokeFlavorCard extends StatelessWidget {
-  final String _flavor;
-  final String _imagePath;
+  final String jokeFlavor, imagePath;
 
-  const JokeFlavorCard(this._flavor, this._imagePath);
+  const JokeFlavorCard(this.jokeFlavor, this.imagePath);
 
   @override
   Widget build(BuildContext context) {
-    print(_flavor);
-    print(_imagePath);
     return Card(
         child: ListTile(
-          onTap: () {
-            print('teste');
-          },
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => JokePage(jokeFlavor)),
+        );
+      },
       leading: CircleAvatar(
-        backgroundImage: AssetImage('assets/$_imagePath'),
+        backgroundImage: AssetImage('assets/$imagePath'),
       ),
-      title: Text(_flavor),
-      subtitle: Text(_flavor),
+      title: Text(jokeFlavor),
+      subtitle: Text(jokeFlavor),
       trailing: Icon(Icons.play_arrow),
     ));
   }
