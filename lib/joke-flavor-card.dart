@@ -13,11 +13,14 @@ class JokeFlavorCard extends StatelessWidget {
       onTap: () {
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (context) => JokePage(jokeFlavor)),
+          MaterialPageRoute(builder: (context) => JokePage(jokeFlavor, imagePath)),
         );
       },
-      leading: CircleAvatar(
-        backgroundImage: AssetImage('assets/$imagePath'),
+      leading: Hero(
+        tag: imagePath,
+        child: CircleAvatar(
+          backgroundImage: AssetImage('assets/$imagePath'),
+        ),
       ),
       title: Text(jokeFlavor),
       subtitle: Text(jokeFlavor),

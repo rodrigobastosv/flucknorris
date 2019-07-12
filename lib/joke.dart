@@ -1,92 +1,47 @@
 import 'dart:convert';
+import 'package:bloc_pattern/bloc_pattern.dart';
+import 'package:flucknorris/chuck_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
-class JokePage extends StatefulWidget {
-  final String jokeFlavor;
+class JokePage extends StatelessWidget {
+  String jokeFlavor;
+  String imagePath;
+  ChuckBloc bloc = BlocProvider.getBloc<ChuckBloc>();
 
-  const JokePage(this.jokeFlavor);
-
-  @override
-  State<StatefulWidget> createState() {
-    return JokePageState();
+  JokePage(String jokeFlavor, String imagePath) {
+    this.jokeFlavor = jokeFlavor;
+    this.imagePath = imagePath;
+    fetchJoke();
   }
-}
-
-class JokePageState extends State<JokePage> {
-  String joke = '', jokeFlavor;
-  bool isLoading = true;
 
   void fetchJoke() async {
-    setState(() {
-      isLoading = true;
-    });
     final String category = jokeFlavor.toLowerCase();
     final response = await http
         .get('https://api.chucknorris.io/jokes/random?category=$category');
 
     if (response.statusCode == 200) {
       Map<String, dynamic> responseData = jsonDecode(response.body);
-      setState(() {
-        isLoading = false;
-        joke = responseData['value'];
-      });
-    } else {
-      setState(() {
-        isLoading = false;
-      });
-      throw Exception('Failed to load joke');
+      bloc.pushJoke(responseData['value']);
     }
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    jokeFlavor = widget.jokeFlavor;
-    fetchJoke();
-  }
-
-  Widget _buildJokeWidget() {
-    return isLoading
-        ? CircularProgressIndicator(backgroundColor: Color.fromRGBO(255, 0, 0, 0.5),)
-        : Text(
-            joke,
-            style: TextStyle(fontSize: 20.0),
-          );
-  }
-
-  Widget _buildChuckMencionWidget() {
-    return isLoading
-        ? Container()
-        : Container(
-            margin: EdgeInsets.only(left: 120.0),
-            child: Text(
-              'Chuck Norris',
-              textAlign: TextAlign.end,
-              style: TextStyle(fontSize: 14.0, fontWeight: FontWeight.bold),
-            ),
-          );
-  }
-
-  Widget _buildFetchJokeButton() {
-    return isLoading
-        ? Container()
-        : Align(
-            alignment: Alignment(0.9, -1.0),
-            heightFactor: 0.5,
-            child: FloatingActionButton(
-              onPressed: () => fetchJoke(),
-              child: Icon(Icons.repeat_one),
-            ),
-          );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('$jokeFlavor Jokes'),
-      ),
+          title: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: <Widget>[
+          Text('$jokeFlavor Jokes'),
+          Hero(
+            tag: imagePath,
+            child: CircleAvatar(
+              backgroundImage: AssetImage('assets/' + imagePath),
+            ),
+          ),
+        ],
+      )),
       body: Column(
         children: <Widget>[
           Container(
@@ -101,15 +56,39 @@ class JokePageState extends State<JokePage> {
                     SizedBox(
                       height: 4.0,
                     ),
-                    _buildChuckMencionWidget(),
-                    SizedBox(
-                      height: 4.0,
-                    ),
                     _buildFetchJokeButton(),
                   ],
                 )),
-          )
+          ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildJokeWidget() {
+    return StreamBuilder(
+      stream: bloc.chuckObservable,
+      builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
+        if (snapshot.hasData) {
+          return Text(
+            snapshot.data,
+            style: TextStyle(fontSize: 20.0),
+          );
+        }
+        return CircularProgressIndicator(
+          backgroundColor: Color.fromRGBO(255, 0, 0, 0.5),
+        );
+      },
+    );
+  }
+
+  Widget _buildFetchJokeButton() {
+    return Align(
+      alignment: Alignment(0.9, -1.0),
+      heightFactor: 0.5,
+      child: FloatingActionButton(
+        onPressed: () => fetchJoke(),
+        child: Icon(Icons.repeat_one),
       ),
     );
   }
