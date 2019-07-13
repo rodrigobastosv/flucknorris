@@ -16,6 +16,7 @@ class JokePage extends StatelessWidget {
   }
 
   void fetchJoke() async {
+    bloc.pushJoke(null);
     final String category = jokeFlavor.toLowerCase();
     final response = await http
         .get('https://api.chucknorris.io/jokes/random?category=$category');
@@ -75,8 +76,11 @@ class JokePage extends StatelessWidget {
             style: TextStyle(fontSize: 20.0),
           );
         }
-        return CircularProgressIndicator(
-          backgroundColor: Color.fromRGBO(255, 0, 0, 0.5),
+        print(snapshot.connectionState);
+        return Center(
+          child: CircularProgressIndicator(
+            backgroundColor: Color.fromRGBO(255, 0, 0, 0.5),
+          ),
         );
       },
     );
@@ -87,7 +91,7 @@ class JokePage extends StatelessWidget {
       alignment: Alignment(0.9, -1.0),
       heightFactor: 0.5,
       child: FloatingActionButton(
-        onPressed: () => fetchJoke(),
+        onPressed: fetchJoke,
         child: Icon(Icons.repeat_one),
       ),
     );
