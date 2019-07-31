@@ -2,14 +2,20 @@ import 'package:flucknorris/with_label.dart';
 import 'package:flutter/material.dart';
 
 class GSCombobox<T extends WithLabel> extends StatefulWidget {
-  GSCombobox({
-    @required this.labelText,
-    this.values,
-    this.onChanged,
-    Key key
-  }): super(key: key);
+  GSCombobox(
+      {@required this.labelText,
+      this.itemBuilder,
+      this.values,
+      this.firstSelected = false,
+      this.allowClear = true,
+      this.onChanged,
+      Key key})
+      : super(key: key);
 
   final String labelText;
+  final bool firstSelected;
+  final bool allowClear;
+  final Function itemBuilder;
   List<T> values;
   Function onChanged;
 
@@ -21,8 +27,12 @@ class GSCombobox<T extends WithLabel> extends StatefulWidget {
     this.onChanged = onChanged;
   }
 
+  bool hasSelectedValue() {
+    return getSelectedValue() != null;
+  }
+
   T getSelectedValue() {
-    return state.getSelectedItem();
+    return values.firstWhere((o) => o.getLabel() == state._currentValue, orElse: () => null);
   }
 
   _GSComboboxState state = _GSComboboxState();
@@ -33,39 +43,72 @@ class GSCombobox<T extends WithLabel> extends StatefulWidget {
 
 class _GSComboboxState<T extends WithLabel> extends State<GSCombobox<T>> {
   List<DropdownMenuItem<String>> _dropDownMenuItems;
-  dynamic _currentValue;
+  String _currentValue;
 
   @override
   void initState() {
     super.initState();
     _dropDownMenuItems = getDropDownMenuItems();
-    _currentValue = _dropDownMenuItems[0].value;
+    if (widget.firstSelected && widget.values.isNotEmpty) {
+      _currentValue = _dropDownMenuItems[1].value;
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    return DropdownButtonFormField<dynamic>(
-      value: _currentValue,
-      items: _dropDownMenuItems,
-      onChanged: changedDropDownItem,
-      decoration: InputDecoration(
-        labelText: widget.labelText,
-        border: OutlineInputBorder(),
-      ),
+    return Column(
+      children: <Widget>[
+        DropdownButtonFormField<dynamic>(
+          value: _currentValue,
+          items: _dropDownMenuItems,
+          onChanged: changedDropDownItem,
+          decoration: InputDecoration(
+              labelText: widget.labelText,
+              border: OutlineInputBorder(),
+              suffixIcon: widget.allowClear && _currentValue != ''
+                  ? _buildClearIcon()
+                  : null),
+        ),
+        _buildNoValues(),
+      ],
     );
   }
 
-  T getSelectedItem() {
-    return widget.values.firstWhere((v) => v.getLabel() == _currentValue);
+  Widget _buildNoValues() {
+    return widget.values.isEmpty
+        ? Text(
+            'Error text',
+            style: TextStyle(color: Color.fromRGBO(255, 0, 0, 0.5)),
+          )
+        : Container();
+  }
+
+  Widget _buildClearIcon() {
+    return GestureDetector(
+      onTap: _resetSelectedValue,
+      child: Icon(Icons.close),
+    );
+  }
+
+  void _resetSelectedValue() {
+    setState(() {
+      _currentValue = '';
+    });
   }
 
   List<DropdownMenuItem<String>> getDropDownMenuItems() {
     final List<DropdownMenuItem<String>> items = <DropdownMenuItem<String>>[];
+    items.add(DropdownMenuItem<String>(
+      value: '',
+      child: Text(''),
+    ));
     for (T value in widget.values) {
       items.add(
         DropdownMenuItem<String>(
           value: value.getLabel(),
-          child: Text(value.getLabel()),
+          child: widget.itemBuilder != null
+              ? widget.itemBuilder(value)
+              : Text(value.getLabel()),
         ),
       );
     }
@@ -75,7 +118,7 @@ class _GSComboboxState<T extends WithLabel> extends State<GSCombobox<T>> {
   void changedDropDownItem(dynamic selectedValue) {
     setState(() {
       _currentValue = selectedValue;
+      widget.onChanged();
     });
-    widget.onChanged();
   }
 }

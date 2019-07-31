@@ -6,13 +6,21 @@ import 'gs_combobox.dart';
 
 class HomePage extends StatelessWidget {
   static final List<Usuario> values = <Usuario>[
-    Usuario(1, 'Teste', 'Teste', 'Teste', 'a'),
-    Usuario(2, 'Teste2', 'Teste2', 'Teste2', 'a'),
-    Usuario(3, 'Teste3', 'Teste3', 'Teste3', 'a'),
-    Usuario(4, 'Teste4', 'Teste4', 'Teste4', 'a'),
+    Usuario(1, 'Teste', 'Teste', 'Testeqqqqqq', 'a'),
+    Usuario(2, 'Teste2', 'Teste2', 'Teste2wwwww', 'a'),
+    Usuario(3, 'Teste3', 'Teste3', 'Teste3eeee', 'a'),
+    Usuario(4, 'Teste4', 'Teste4', 'Teste4rrrr', 'a'),
   ];
 
-  final a = GSCombobox(labelText: 'aaaaa');
+  final a = GSCombobox(firstSelected: true, labelText: 'aaaaa', itemBuilder: (Usuario u) {
+    Color c = u.nome == 'Teste' ? Color.fromRGBO(5, 3, 9, 0.5) : Color.fromRGBO(55, 79, 119, 0.5);
+    return Container(color: c, child: Row(children: <Widget>[
+      CircleAvatar(
+        backgroundImage: AssetImage('assets/chuck.jpg'),
+      ),
+      Text(u.nome)
+    ],),);
+  });
 
   void onChanged() {
     Usuario u = a.getSelectedValue();
@@ -34,7 +42,14 @@ class HomePage extends StatelessWidget {
         ),
         title: Text('Fluck Norris Joke Teller'),
       ),
-      body: a,
+      body: Column(
+        children: <Widget>[
+          a,
+          RaisedButton(onPressed: () {
+            print(a.getSelectedValue());
+          },)
+        ],
+      ),
     );
   }
 }
